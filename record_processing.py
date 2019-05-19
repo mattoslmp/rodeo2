@@ -128,21 +128,25 @@ def fill_request_queue(queries, processed_records_q, unprocessed_records_q, args
             logger.debug("Fetching %s data" % query)
             gb_handles = get_gb_handles(query)
             nuccore_accession = query
-            if len(gb_handles) < 0:
-                #if gb_handles == -1:
-                error_message = "No results in protein db for Esearch on %s" % (query)
-                #elif gb_handles == -2:
-                #    error_message = "No results in nuccore db for value obtained from protein db"
-                #elif gb_handles == -3:
-                #    error_message = "Any response failure from Entrez database (error on database side)"
-                #else:
-                #    error_message = "Unknown Entrez error."
+            if isinstance(gb_handles, int) and gb_handles < 0:
+                if gb_handles == -1:
+                    error_message = "No results in protein db for Esearch on %s" % (query)
+                elif gb_handles == -2:
+                    error_message = "No results in nuccore db for value obtained from protein db"
+                elif gb_handles == -3:
+                    error_message = "Any response failure from Entrez database (error on database side)"
+                else:
+                    error_message = "Unknown Entrez error."
                 unprocessed_records_q.put(ErrorReport(query, error_message))
                 continue
             for handle in gb_handles:
                 record = get_record_from_gb_handle(handle, nuccore_accession)
-                if record is None:
-                    error_message = "Couldn't process %s Genbank filestream. May be corrupt." % (query)
+                if isinstance(record, int) and record < 0:
+                    if record == -1:
+                       error_message = "Couldn't process %s Genbank filestream. May be corrupt."\
+                         % (query)
+                    else:
+                        error_message = "Unknown error"
                     unprocessed_records_q.put(ErrorReport(query, error_message))
                     if not master_conf['general']['variables']['evaluate_all']:
                         break
