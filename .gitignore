@@ -1,0 +1,7 @@
+*_rodeo_out/ 
+tmp_files/
+*.pyc
+*.txt
+*.gbk
+work_dir/
+__pycache__/

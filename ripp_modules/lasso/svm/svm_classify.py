@@ -82,7 +82,7 @@ def parse_CSV_to_dataset(csv_filename, dataset_type):
             dataset_type            either 'training' or 'fitting'
     '''
     dataset = []
-    with open(csv_filename, 'rb') as csvfile:
+    with open(csv_filename, 'r') as csvfile:
       csv_read = csv.reader(csvfile, delimiter=',', quotechar='"')
       if csv_has_header == True:
         next(csv_read,None)
